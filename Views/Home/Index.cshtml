@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Welcome Page";
+}
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="hero-container">
+    <div class="text-center content">
+        <h1 class="display-4">Welcome to Our Website</h1>
+        <p class="lead">Explore our features and stay connected with us.</p>
+        <a href="@Url.Action("Index", "Contact")" class="btn btn-primary btn-lg">Go to Contacts</a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .hero-container {
+            background-color: #26d176;
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .content {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .content p {
+            font-size: 1.25rem;
+        }
+
+        .btn-primary {
+            background-color: #28a745; 
+            border-color: #28a745;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: scale(1.05);
+        }
+
+        .btn-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
+        }
+    </style>
+}

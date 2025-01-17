@@ -1,0 +1,16 @@
+﻿@model IEnumerable<string>
+
+@{
+    ViewData["Title"] = "Upload Error";
+}
+
+<div class="container py-4">
+    <h2 class="text-danger">Upload Error</h2>
+    <ul class="list-group my-3">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <li class="list-group-item text-danger">@error.ErrorMessage</li>
+        }
+    </ul>
+    <a href="@Url.Action("Index", "Contact")" class="btn btn-primary">Back to Upload</a>
+</div>

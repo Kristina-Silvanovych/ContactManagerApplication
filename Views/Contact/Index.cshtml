@@ -1,0 +1,240 @@
+﻿@model IEnumerable<ContactManagerApp.Entities.Contact>
+
+@{
+    Layout = "_Layout";
+}
+
+<h1 class="text-center text-success">Contacts</h1>
+
+<form asp-action="Upload" method="post" enctype="multipart/form-data" class="mb-3">
+    <div class="input-group">
+        <input type="file" name="file" class="form-control" />
+        <button type="submit" class="btn btn-success">Upload CSV</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    <label for="sortDirection">Sort Direction:</label>
+    <select id="sortDirection" onchange="updateSortDirection()" class="form-select">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+</div>
+
+<table id="contactsTable" class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                <a href="#" onclick="sortTable(0)" class="text-dark">Name</a>
+            </th>
+            <th>
+                <a href="#" onclick="sortTable(1)" class="text-dark">Date of Birth</a>
+            </th>
+            <th>
+                <a href="#" onclick="sortTable(2)" class="text-dark">Married</a>
+            </th>
+            <th>
+                <a href="#" onclick="sortTable(3)" class="text-dark">Phone</a>
+            </th>
+            <th>
+                <a href="#" onclick="sortTable(4)" class="text-dark">Salary</a>
+            </th>
+            <th>Actions</th>
+        </tr>
+        <tr>
+            <th colspan="6">
+                <input type="text" id="globalFilter" onkeyup="filterTable()" class="form-control" placeholder="Filter across all columns">
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var contact in Model)
+        {
+            <tr>
+                <form asp-action="Update" method="post">
+                <td>
+                    <input type="text" name="Name" value="@contact.Name" class="form-control" />
+                </td>
+                <td>
+                    <input type="date" name="DateOfBirth" value="@contact.DateOfBirth.ToString("yyyy-MM-dd")" class="form-control" />
+                </td>
+                <td>
+                    <input type="checkbox" name="Married" @(contact.Married ? "checked" : "") />
+                </td>
+                <td>
+                    <input type="text" name="Phone" value="@contact.Phone" class="form-control" />
+                </td>
+                <td>
+                    <input type="text" name="Salary" value="@contact.Salary" class="form-control" />
+                </td>
+                <td>
+                    <input type="hidden" name="Id" value="@contact.Id" />
+                    <button type="submit" class="btn btn-success">Update</button>
+                </td>
+                </form>
+                <td>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@contact.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Styles {
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        h1 {
+            color: #28a745;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        button {
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+            button:hover {
+                opacity: 0.85;
+            }
+
+        .styled-table th, .styled-table td {
+            text-align: left;
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .thead-dark th {
+            background-color: #155724; 
+            color: white;
+        }
+
+        .table-striped tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table-striped tbody tr:hover {
+            background-color: #d1ffd1;
+        }
+
+        .update-btn {
+            background-color: #28a745; 
+        }
+
+            .update-btn:hover {
+                background-color: #218838;
+            }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+            .delete-btn:hover {
+                background-color: #c82333;
+            }
+
+        #globalFilter {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .input-group {
+            width: 100%;
+        }
+
+            .input-group input {
+                width: 85%; 
+            }
+
+            .input-group button {
+                width: 15%; 
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        var dir = "asc";
+
+        function updateSortDirection() {
+            var select = document.getElementById("sortDirection");
+            dir = select.value;
+        }
+
+        function sortTable(n) {
+            var table = document.getElementById("contactsTable");
+            var rows = table.rows;
+            var switching = true;
+            var shouldSwitch, i;
+            var switchCount = 0;
+
+            while (switching) {
+                switching = false;
+                var rowsArray = Array.from(rows).slice(2);
+                for (i = 0; i < rowsArray.length - 1; i++) {
+                    shouldSwitch = false;
+                    var x = rowsArray[i].getElementsByTagName("TD")[n];
+                    var y = rowsArray[i + 1].getElementsByTagName("TD")[n];
+
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rowsArray[i].parentNode.insertBefore(rowsArray[i + 1], rowsArray[i]);
+                    switching = true;
+                    switchCount++;
+                } else {
+                    if (switchCount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        function filterTable() {
+            var input = document.getElementById("globalFilter");
+            var filter = input.value.toLowerCase();
+            var table = document.getElementById("contactsTable");
+            var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName("td");
+                var match = false;
+                for (var j = 0; j < cells.length; j++) {
+                    if (cells[j]) {
+                        var cellText = cells[j].textContent || cells[j].innerText;
+                        if (cellText.toLowerCase().indexOf(filter) > -1) {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                rows[i].style.display = match ? "" : "none";
+            }
+        }
+    </script>
+}
